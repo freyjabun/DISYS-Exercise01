@@ -7,7 +7,11 @@ type Fork struct {
 	inUse bool
 }
 
+<<<<<<< HEAD
 func NewFork(id int) *Fork {
+=======
+func Create(id int) *Fork {
+>>>>>>> 83c44878ed50dba49bb5fb3a388e5c7e7abd7d4e
 	var fork Fork
 	fork.used = 0
 	fork.inUse = false
@@ -22,10 +26,10 @@ func JustUsed(fork Fork) {
 	fork.used++
 }
 
-func isInUse(fork Fork) bool {
+func IsInUse(fork Fork) bool {
 	return fork.inUse
 }
 
-func timesUsed(fork Fork) int {
+func TimesUsed(fork Fork) int {
 	return fork.used
 }
