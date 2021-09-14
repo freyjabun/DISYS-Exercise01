@@ -16,6 +16,8 @@ func main() {
 		philosophers[i] = NewPhilosopher(i, forks[i], forks[(i+1)%count])
 	}
 
+	// Create goroutines for each philosopher and fork i guess?
+
 	Eat(*philosophers[0])
 }
 

@@ -17,8 +17,8 @@ type Philosopher struct {
 	timesEaten int
 	isEating   bool
 
-	reciever chan bool
-	sender   chan bool
+	reciever chan string
+	sender   chan string
 }
 
 // Creates a new philosopher and returns a pointer to the address
@@ -33,8 +33,8 @@ func NewPhilosopher(id int, leftFork *Fork, rightFork *Fork) *Philosopher {
 	p.timesEaten = 0
 	p.isEating = false
 
-	p.reciever = make(chan bool, 2)
-	p.sender = make(chan bool, 2)
+	p.reciever = make(chan string, 2)
+	p.sender = make(chan string)
 
 	var newPhilosopher *Philosopher = &p
 
@@ -46,13 +46,15 @@ func Think() {
 }
 
 func Eat(p Philosopher) {
-	fmt.Println("He eatin' now")
+	p.sender <- "I wanna eat"
+	<-p.reciever
+	<-p.reciever
 	p.isEating = true
-	time.Sleep(1 * time.Second)
+	fmt.Println("Philosopher %d is eating", p.id)
+	time.Sleep(2 * time.Second)
 	p.isEating = false
 	p.timesEaten++
-	fmt.Println("He no eat no mo")
-
+	fmt.Println("Philosopher %d has stopped eating and has eaten %d", p.id, p.timesEaten)
 }
 
 func GetTimesEaten(p Philosopher) int {
