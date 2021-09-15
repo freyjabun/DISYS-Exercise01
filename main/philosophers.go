@@ -38,9 +38,41 @@ func (p Philosopher) philosopherCycle() {
 		//forks. Therefore we can stop a deadlock??? i think?
 		arbiter.Lock()
 
-		bool leftfork.inUse := <-leftFork.sender
-		bool rightFork.inUse := <-rightFork.sender
+		//reseting some variables and creating action
+		p.isEating = false
+		action := "nothing"
+		
+		//these two channels will tell the philosopher whether the forks are 
+		//available or not... i think?
+		isLeftForkInUse := <-leftFork.sender
+		isRightForkInUse := <-rightFork.sender
 
+		willPickUp := !isLeftForkInUse && !isRightForkInUse
+
+		if willPickUp{
+			action = "pick up"
+		}
+
+		leftFork.reciever <- action
+		leftFork.reciever <- action
+
+		if willPickUp {
+			p.isEating = true
+			p.timesEaten++
+		}
+
+		arbiter.Unlock()
+
+		time.Sleep(2*time.Second)
+
+		if p.isEating {
+			arbiter.Lock()
+			<- leftFork.sender
+			<- rightFork.sender
+			leftFork.reciever <- "put down"
+			leftFork.reciever <- "put down"
+			arbiter.Unlock()
+		}
 	}
 }
 
@@ -62,18 +94,6 @@ func NewPhilosopher(id int, leftFork *Fork, rightFork *Fork) *Philosopher {
 	var newPhilosopher *Philosopher = &p
 
 	return newPhilosopher
-}
-
-func Eat(p Philosopher) {
-	p.sender <- "I wanna eat"
-	<-p.reciever
-	<-p.reciever
-	p.isEating = true
-	fmt.Println("Philosopher %d is eating", p.id)
-	time.Sleep(2 * time.Second)
-	p.isEating = false
-	p.timesEaten++
-	fmt.Println("Philosopher %d has stopped eating and has eaten %d", p.id, p.timesEaten)
 }
 
 func GetTimesEaten(p Philosopher) int {
