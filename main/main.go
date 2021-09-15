@@ -14,11 +14,18 @@ func main() {
 	philosophers := make([]*Philosopher, count)
 	for i := 0; i < count; i++ {
 		philosophers[i] = NewPhilosopher(i, forks[i], forks[(i+1)%count])
+
 	}
 
 	// Create goroutines for each philosopher and fork i guess?
+	for i := 0; i < count; i++ {
+		go forks[i].ForkCycle()
+	}
 
-	Eat(*philosophers[0])
+	for i := 0; i < count; i++ {
+		go philosophers[i].philosopherCycle()
+	}
+
 }
 
 /*
