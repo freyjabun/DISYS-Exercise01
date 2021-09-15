@@ -21,6 +21,26 @@ type Philosopher struct {
 	sender   chan string
 }
 
+func (p Philosopher) philosopherCycle() {
+	for {
+		select {
+		// In case that a request is recieved from a fork, p writes a response
+		case <-p.reciever:
+			p.sender <- "Send som info i guess?"
+		// In case that there is nothing send to the reciever, it does nothing
+		default:
+		}
+
+		//This locks the entire table s.t. only this philosopher can acces the
+		//forks. Therefore we can stop a deadlock??? i think?
+		arbiter.Lock()
+
+		leftfork := <-leftFork.sender
+		rightFork := <-rightFork.sender
+
+	}
+}
+
 // Creates a new philosopher and returns a pointer to the address
 // uses an Id, a pointer to the left fork and a pointer to the right fork
 
@@ -39,10 +59,6 @@ func NewPhilosopher(id int, leftFork *Fork, rightFork *Fork) *Philosopher {
 	var newPhilosopher *Philosopher = &p
 
 	return newPhilosopher
-}
-
-func Think() {
-	//Afspil think af aretha franklin or some shit
 }
 
 func Eat(p Philosopher) {
