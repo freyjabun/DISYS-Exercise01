@@ -7,10 +7,8 @@ type Fork struct {
 	inUse bool
 
 	reciever chan string
-	sender   chan string
+	sender   chan bool
 }
-
-type ForkInfo
 
 func NewFork(id int) *Fork {
 	var fork Fork
@@ -21,7 +19,7 @@ func NewFork(id int) *Fork {
 	var created *Fork = &fork
 
 	fork.reciever = make(chan string, 2)
-	fork.sender = make(chan Fork)
+	fork.sender = make(chan bool)
 
 	return created
 }
@@ -43,7 +41,7 @@ func (f Fork) ForkCycle() {
 		// The fork sends a message through the channel. This locks the fork until
 		// a philosopher recieves the message. The philosopher will then write back
 		// with an action, describing what the philosopher will do with the fork
-		f.sender <- "Send something i guess"
+		f.sender <- f.inUse
 		action := <-f.reciever
 
 		if action == "pick up" {

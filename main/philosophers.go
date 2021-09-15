@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -21,6 +22,8 @@ type Philosopher struct {
 	sender   chan string
 }
 
+var arbiter sync.Mutex
+
 func (p Philosopher) philosopherCycle() {
 	for {
 		select {
@@ -35,8 +38,8 @@ func (p Philosopher) philosopherCycle() {
 		//forks. Therefore we can stop a deadlock??? i think?
 		arbiter.Lock()
 
-		leftfork := <-leftFork.sender
-		rightFork := <-rightFork.sender
+		bool leftfork.inUse := <-leftFork.sender
+		bool rightFork.inUse := <-rightFork.sender
 
 	}
 }
