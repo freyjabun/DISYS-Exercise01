@@ -1,7 +1,6 @@
-package main
+package implementations
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -41,15 +40,15 @@ func (p Philosopher) philosopherCycle() {
 		//reseting some variables and creating action
 		p.isEating = false
 		action := "nothing"
-		
-		//these two channels will tell the philosopher whether the forks are 
+
+		//these two channels will tell the philosopher whether the forks are
 		//available or not... i think?
 		isLeftForkInUse := <-leftFork.sender
 		isRightForkInUse := <-rightFork.sender
 
 		willPickUp := !isLeftForkInUse && !isRightForkInUse
 
-		if willPickUp{
+		if willPickUp {
 			action = "pick up"
 		}
 
@@ -63,12 +62,12 @@ func (p Philosopher) philosopherCycle() {
 
 		arbiter.Unlock()
 
-		time.Sleep(2*time.Second)
+		time.Sleep(2 * time.Second)
 
 		if p.isEating {
 			arbiter.Lock()
-			<- leftFork.sender
-			<- rightFork.sender
+			<-leftFork.sender
+			<-rightFork.sender
 			leftFork.reciever <- "put down"
 			leftFork.reciever <- "put down"
 			arbiter.Unlock()

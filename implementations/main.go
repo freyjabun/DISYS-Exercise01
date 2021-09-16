@@ -1,4 +1,4 @@
-package main
+package implementations
 
 func main() {
 	// Number of Philosophers and forks
