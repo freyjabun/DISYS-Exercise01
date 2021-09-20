@@ -6,9 +6,23 @@ type Fork struct {
 	id    int
 	inUse bool
 
-	reciever chan string
-	sender   chan bool
+	reciever        chan string
+	sender          chan bool
+	requestReceiver chan Request
 }
+
+type Request struct {
+	who   *Philosopher
+	event Event
+}
+
+type Event int
+
+const (
+	enqueue Event = iota
+	drop
+	print
+)
 
 func NewFork(id int) *Fork {
 	var fork Fork
@@ -20,6 +34,7 @@ func NewFork(id int) *Fork {
 
 	fork.reciever = make(chan string, 2)
 	fork.sender = make(chan bool)
+	fork.requestReceiver = make(chan Request)
 
 	return created
 }
@@ -36,13 +51,17 @@ func TimesUsed(fork Fork) int {
 	return fork.used
 }
 
-func (f Fork) ForkCycle() {
+func (f *Fork) ForkCycle() {
 	for {
 		// The fork sends a message through the channel. This locks the fork until
 		// a philosopher recieves the message. The philosopher will then write back
 		// with an action, describing what the philosopher will do with the fork
 		f.sender <- f.inUse
 		action := <-f.reciever
+
+		switch {
+
+		}
 
 		if action == "pick up" {
 			f.inUse = true
