@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -43,7 +44,7 @@ func (p Philosopher) philosopherCycle() {
 		action := doNothing
 
 		//these two channels will tell the philosopher whether the forks are
-		//available or not... i think?
+		//available or not... i think?--
 		LeftForkStatus := <-p.leftFork.sender
 		RightForkStatus := <-p.rightFork.sender
 
@@ -60,6 +61,8 @@ func (p Philosopher) philosopherCycle() {
 			p.status.isEating = true
 			p.status.timesEaten++
 		}
+
+		fmt.Println("i am eating nom nom")
 
 		arbiter.Unlock()
 

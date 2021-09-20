@@ -33,7 +33,7 @@ func (f *Fork) forkCycle() {
 	for {
 		// The fork sends a message through the channel. This locks the fork until
 		// a philosopher recieves the message. The philosopher will then write back
-		// with an action, describing what the philosopher will do with the fork
+		// with an action, describing what the philosopher will do with the fork--
 		f.sender <- f.status
 		event := <-f.reciever
 

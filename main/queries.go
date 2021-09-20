@@ -18,7 +18,10 @@ func query() {
 	runCommand(command, number)
 }
 
-func runCommand(command string, number int) {
+//dsfsdf
+
+func runCommand(command string, n int) {
+	number := n - 1
 	command = strings.ToLower(command)
 
 	switch command {
@@ -26,6 +29,8 @@ func runCommand(command string, number int) {
 		fmt.Println("Program is exiting")
 		os.Exit(0)
 	case "inspectfork":
+		status := <-forks[number].sender
+		fmt.Println("test %v sdfsdf", status.timesUsed)
 		forks[number].reciever <- print
 	case "inspectphilosopher":
 		status := <-philosophers[number].sender

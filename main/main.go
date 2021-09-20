@@ -8,7 +8,7 @@ var forks = make([]*Fork, count)
 var philosophers = make([]*Philosopher, count)
 
 func main() {
-	// Create forks and starts their go routine
+	// Create forks and starts their go routine..
 	for i := 0; i < count; i++ {
 		forks[i] = NewFork(i)
 		go forks[i].forkCycle()
