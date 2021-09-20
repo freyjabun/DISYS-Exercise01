@@ -1,4 +1,4 @@
-package main
+package implementations
 
 //Hello this is a fork...
 type Fork struct {
