@@ -26,12 +26,10 @@ func runCommand(command string, number int) {
 		fmt.Println("Program is exiting")
 		os.Exit(0)
 	case "inspectfork":
-		forks[number].requestReceiver <- Request{
-			who:   nil,
-			event: print,
-		}
+		forks[number].reciever <- print
 	case "inspectphilosopher":
-		philosophers[number].status <- true
+		status := <-philosophers[number].sender
+		fmt.Printf("Philosopher with id %v has eaten %v times. Are they currently eating? %t\n", philosophers[number].id, status.timesEaten, status.isEating)
 	case "help":
 		fmt.Println("Available commands are \"exit\", \"inspectphilosopher n\", and \"inspectfork n\" where n is the id of a philosopher or fork in the range 1-5 inclusive")
 	default:

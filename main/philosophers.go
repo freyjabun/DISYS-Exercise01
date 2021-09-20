@@ -14,11 +14,15 @@ type Philosopher struct {
 	leftFork  *Fork
 	rightFork *Fork
 
+	status PhilosopherStatus
+
+	sender   chan PhilosopherStatus
+	reciever chan bool
+}
+
+type PhilosopherStatus struct {
 	timesEaten int
 	isEating   bool
-
-	reciever chan string
-	sender   chan string
 }
 
 var arbiter sync.Mutex
@@ -26,50 +30,48 @@ var arbiter sync.Mutex
 func (p Philosopher) philosopherCycle() {
 	for {
 		select {
-		// In case that a request is recieved from a fork, p writes a response
+		// if query want to know about a philosopher we return philosopher info
 		case <-p.reciever:
-			p.sender <- "Send som info i guess?"
-		// In case that there is nothing send to the reciever, it does nothing
-		default:
+			p.sender <- p.status
 		}
 
 		//This locks the entire table s.t. only this philosopher can acces the
-		//forks. Therefore we can stop a deadlock??? i think?
+		//forks.
 		arbiter.Lock()
 
-		//reseting some variables and creating action
-		p.isEating = false
-		action := "nothing"
+		//creating action
+		action := doNothing
 
 		//these two channels will tell the philosopher whether the forks are
 		//available or not... i think?
-		isLeftForkInUse := <-p.leftFork.sender
-		isRightForkInUse := <-p.rightFork.sender
+		LeftForkStatus := <-p.leftFork.sender
+		RightForkStatus := <-p.rightFork.sender
 
-		willPickUp := !isLeftForkInUse && !isRightForkInUse
+		willPickUp := !LeftForkStatus.inUse && !RightForkStatus.inUse
 
 		if willPickUp {
-			action = "pick up"
+			action = pickUp
 		}
 
 		p.leftFork.reciever <- action
 		p.leftFork.reciever <- action
 
 		if willPickUp {
-			p.isEating = true
-			p.timesEaten++
+			p.status.isEating = true
+			p.status.timesEaten++
 		}
 
 		arbiter.Unlock()
 
 		time.Sleep(2 * time.Second)
 
-		if p.isEating {
+		if p.status.isEating {
 			arbiter.Lock()
-			<- p.leftFork.sender
-			<- p.rightFork.sender
-			p.leftFork.reciever <- "put down"
-			p.leftFork.reciever <- "put down"
+			<-p.leftFork.sender
+			<-p.rightFork.sender
+			p.leftFork.reciever <- putDown
+			p.leftFork.reciever <- putDown
+			p.status.isEating = false
 			arbiter.Unlock()
 		}
 	}
@@ -84,21 +86,13 @@ func NewPhilosopher(id int, leftFork *Fork, rightFork *Fork) *Philosopher {
 	p.leftFork = leftFork
 	p.rightFork = rightFork
 
-	p.timesEaten = 0
-	p.isEating = false
+	p.status.timesEaten = 0
+	p.status.isEating = false
 
-	p.reciever = make(chan string, 2)
-	p.sender = make(chan string)
+	p.sender = make(chan PhilosopherStatus, 2)
+	p.reciever = make(chan bool)
 
 	var newPhilosopher *Philosopher = &p
 
 	return newPhilosopher
-}
-
-func GetTimesEaten(p Philosopher) int {
-	return p.timesEaten
-}
-
-func IsEating(p Philosopher) bool {
-	return p.isEating
 }
