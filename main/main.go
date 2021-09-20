@@ -18,7 +18,7 @@ func main() {
 
 	// Create goroutines for each philosopher and fork i guess?
 
-	Eat(*philosophers[0])
+	//(*philosophers[0])
 }
 
 /*
