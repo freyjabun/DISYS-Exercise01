@@ -34,6 +34,7 @@ func (p Philosopher) philosopherCycle() {
 		// if query want to know about a philosopher we return philosopher info
 		case <-p.reciever:
 			p.sender <- p.status
+		default:
 		}
 
 		//This locks the entire table s.t. only this philosopher can acces the
@@ -55,7 +56,7 @@ func (p Philosopher) philosopherCycle() {
 		}
 
 		p.leftFork.reciever <- action
-		p.leftFork.reciever <- action
+		p.rightFork.reciever <- action
 
 		if willPickUp {
 			p.status.isEating = true
