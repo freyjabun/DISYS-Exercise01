@@ -1,55 +1,64 @@
 package main
 
-//Hello this is a fork...
-type Fork struct {
-	used  int
-	id    int
-	inUse bool
+import (
+	"fmt"
+)
 
-	reciever chan string
-	sender   chan bool
+type Fork struct {
+	id       int
+	status   ForkStatus
+	reciever chan Event
+	sender   chan ForkStatus
+}
+
+type ForkStatus struct {
+	inUse     bool
+	timesUsed int
 }
 
 func NewFork(id int) *Fork {
 	var fork Fork
-	fork.used = 0
-	fork.inUse = false
+	fork.status = ForkStatus{inUse: false, timesUsed: 0}
 	fork.id = id
 
 	var created *Fork = &fork
 
-	fork.reciever = make(chan string, 2)
-	fork.sender = make(chan bool)
+	fork.reciever = make(chan Event)
+	fork.sender = make(chan ForkStatus)
 
 	return created
 }
 
-func JustUsed(fork Fork) {
-	fork.used++
-}
-
-func IsInUse(fork Fork) bool {
-	return fork.inUse
-}
-
-func TimesUsed(fork Fork) int {
-	return fork.used
-}
-
-func (f Fork) ForkCycle() {
+func (f *Fork) forkCycle() {
 	for {
 		// The fork sends a message through the channel. This locks the fork until
 		// a philosopher recieves the message. The philosopher will then write back
-		// with an action, describing what the philosopher will do with the fork
-		f.sender <- f.inUse
-		action := <-f.reciever
+		// with an action, describing what the philosopher will do with the fork--
+		f.sender <- f.status
+		event := <-f.reciever
 
-		if action == "pick up" {
-			f.inUse = true
-			f.used++
-		} else if action == "put down" {
-			f.inUse = false
+		switch event {
+		case pickUp:
+			f.status.inUse = true
+			f.status.timesUsed++
+		case putDown:
+			f.status.inUse = false
+		case print:
+			f.Print()
 		}
 
 	}
 }
+
+func (fork *Fork) Print() {
+	fmt.Printf("Fork with id %v has been used %v times. Is it currently in use? %t\n", fork.id+1, fork.status.timesUsed, fork.status.inUse)
+}
+
+type Event int
+
+const (
+	pickUp Event = iota
+	putDown
+	doNothing
+	print
+)

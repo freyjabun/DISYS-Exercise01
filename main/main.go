@@ -1,43 +1,29 @@
 package main
 
-func main() {
-	// Number of Philosophers and forks
-	count := 5
+import "fmt"
 
-	// Create forks
-	forks := make([]*Fork, count)
+const count = 5
+
+var forks = make([]*Fork, count)
+var philosophers = make([]*Philosopher, count)
+
+func main() {
+	// Create forks and starts their go routine..
 	for i := 0; i < count; i++ {
 		forks[i] = NewFork(i)
+		go forks[i].forkCycle()
 	}
 
 	// Create philosophers
-	philosophers := make([]*Philosopher, count)
 	for i := 0; i < count; i++ {
 		philosophers[i] = NewPhilosopher(i, forks[i], forks[(i+1)%count])
+		go philosophers[i].philosopherCycle()
 	}
 
-	// Create goroutines for each philosopher and fork i guess?
+	fmt.Println("Program started. Type \"help\" for available commands")
 
-	//(*philosophers[0])
-}
-
-/*
-func fork(chIn, chOut chan string) {
+	//starts query
 	for {
-		<-chIn
-		chOut <- "Eat with me"
-		<-chIn
+		query()
 	}
 }
-
-func phil(chIn, chOut chan string) {
-	counter := 0
-	for {
-		chOut <- "I wanna eat"
-		<-chIn
-		counter++
-		fmt.Print("I ate %d",counter)
-		chOut <- "I'm done"
-	}
-}
-*/
