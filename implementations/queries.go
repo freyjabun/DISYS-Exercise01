@@ -25,15 +25,16 @@ func runCommand(command string, number int) {
 	case "exit":
 		fmt.Println("Program is exiting")
 		os.Exit(0)
-	case "yo":
-		fmt.Println("yo whatup")
+	case "inspectfork":
+		forks[number].requestReceiver <- Request{
+			who:   nil,
+			event: print,
+		}
+	case "inspectphilosopher":
+		philosophers[number].status <- true
+	case "help":
+		fmt.Println("Available commands are \"exit\", \"inspectphilosopher n\", and \"inspectfork n\" where n is the id of a philosopher or fork in the range 1-5 inclusive")
 	default:
 		fmt.Println("Unknown command. Type \"help\" for help.")
-	}
-}
-
-func main() {
-	for {
-		query()
 	}
 }
