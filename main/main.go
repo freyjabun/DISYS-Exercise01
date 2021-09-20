@@ -25,7 +25,6 @@ func main() {
 	for i := 0; i < count; i++ {
 		go philosophers[i].philosopherCycle()
 	}
-
 }
 
 /*

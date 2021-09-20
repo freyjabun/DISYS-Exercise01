@@ -40,15 +40,15 @@ func (p Philosopher) philosopherCycle() {
 		//reseting some variables and creating action
 		p.isEating = false
 		action := "nothing"
-		
-		//these two channels will tell the philosopher whether the forks are 
+
+		//these two channels will tell the philosopher whether the forks are
 		//available or not... i think?
 		isLeftForkInUse := <-p.leftFork.sender
 		isRightForkInUse := <-p.rightFork.sender
 
 		willPickUp := !isLeftForkInUse && !isRightForkInUse
 
-		if willPickUp{
+		if willPickUp {
 			action = "pick up"
 		}
 
@@ -62,7 +62,7 @@ func (p Philosopher) philosopherCycle() {
 
 		arbiter.Unlock()
 
-		time.Sleep(2*time.Second)
+		time.Sleep(2 * time.Second)
 
 		if p.isEating {
 			arbiter.Lock()
