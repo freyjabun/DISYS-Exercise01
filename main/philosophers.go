@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -63,20 +62,19 @@ func (p Philosopher) philosopherCycle() {
 			p.status.timesEaten++
 		}
 
-		fmt.Println("i am eating nom nom")
-
 		arbiter.Unlock()
 
-		time.Sleep(2 * time.Second)
+		time.Sleep(50 * time.Millisecond)
 
 		if p.status.isEating {
 			arbiter.Lock()
 			<-p.leftFork.sender
 			<-p.rightFork.sender
 			p.leftFork.reciever <- putDown
-			p.leftFork.reciever <- putDown
+			p.rightFork.reciever <- putDown
 			p.status.isEating = false
 			arbiter.Unlock()
+
 		}
 	}
 }
@@ -93,7 +91,7 @@ func NewPhilosopher(id int, leftFork *Fork, rightFork *Fork) *Philosopher {
 	p.status.timesEaten = 0
 	p.status.isEating = false
 
-	p.sender = make(chan PhilosopherStatus, 2)
+	p.sender = make(chan PhilosopherStatus)
 	p.reciever = make(chan bool)
 
 	var newPhilosopher *Philosopher = &p

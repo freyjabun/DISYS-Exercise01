@@ -30,8 +30,7 @@ func runCommand(command string, n int) {
 		os.Exit(0)
 	case "inspectfork":
 		if number < count && number >= 0 {
-			status := <-forks[number].sender
-			fmt.Println("test %v sdfsdf", status.timesUsed)
+			<-forks[number].sender
 			forks[number].reciever <- print
 		} else {
 			fmt.Println("Fork number out of bounds.")
@@ -41,12 +40,30 @@ func runCommand(command string, n int) {
 		if number < count && number >= 0 {
 			philosophers[number].reciever <- true
 			status := <-philosophers[number].sender
-			fmt.Printf("Philosopher with id %v has eaten %v times. Are they currently eating? %t\n", philosophers[number].id, status.timesEaten, status.isEating)
+			fmt.Printf("Philosopher with id %v has eaten %v times. Are they currently eating? %t\n", philosophers[number].id+1, status.timesEaten, status.isEating)
 		} else {
 			fmt.Println("Philosopher number out of bounds.")
 		}
+
+	case "inspectall":
+		for i := 0; i < count; i++ {
+			philosophers[i].reciever <- true
+			status := <-philosophers[i].sender
+			fmt.Printf("Philosopher with id %v has eaten %v times. Are they currently eating? %t\n", philosophers[i].id+1, status.timesEaten, philosophers[i].status.isEating)
+		}
+		for i := 0; i < count; i++ {
+			<-forks[i].sender
+			forks[i].reciever <- print
+		}
 	case "help":
-		fmt.Println("Available commands are \"exit\", \"inspectphilosopher n\", and \"inspectfork n\" where n is the id of a philosopher or fork in the range 1-5 inclusive")
+		fmt.Println("--------------------------------------------------------------------------")
+		fmt.Println("Available commands are:")
+		fmt.Println("    - \"exit\"                   - To exit the program")
+		fmt.Println("    - \"inspectPhilosopher <n>\" - To inspect the philosopher with index n")
+		fmt.Println("    - \"inspectFork <n>\"        - To inspect the fork with index n")
+		fmt.Println("    - \"inspectAll\"             - To inspect all forks and philosophers")
+		fmt.Println("n must be in the range 1-5 inclusive")
+		fmt.Println("--------------------------------------------------------------------------")
 	default:
 		fmt.Println("Unknown command. Type \"help\" for help.")
 	}

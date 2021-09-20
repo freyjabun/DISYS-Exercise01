@@ -23,7 +23,7 @@ func NewFork(id int) *Fork {
 
 	var created *Fork = &fork
 
-	fork.reciever = make(chan Event, 2)
+	fork.reciever = make(chan Event)
 	fork.sender = make(chan ForkStatus)
 
 	return created
@@ -51,7 +51,7 @@ func (f *Fork) forkCycle() {
 }
 
 func (fork *Fork) Print() {
-	fmt.Printf("Fork with id %v has been used %v times. Is it currently in use? %t\n", fork.id, fork.status.timesUsed, fork.status.inUse)
+	fmt.Printf("Fork with id %v has been used %v times. Is it currently in use? %t\n", fork.id+1, fork.status.timesUsed, fork.status.inUse)
 }
 
 type Event int
